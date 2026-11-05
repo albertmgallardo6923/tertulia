@@ -11,7 +11,9 @@ Actualizado: 5 de noviembre de 2026, 21:50
 - **Fase 1:** `docs/analisis-tapatalk.md`, `docs/mercado.md` (investigador); fixtures reales anonimizados;
   `src/api/` (XML-RPC, tipos, `ClienteForo`, descubrimiento) + `docs/api-contrato.md` (api-foros, 35 tests).
 - **Fase 2:** `docs/arquitectura.md` revisada por el `revisor` (sin críticos, 7 importantes aplicados).
-  En curso: correcciones de código del revisor (validador único de endpoints, `xmlrpc.ts`, i18n).
+  Correcciones de código del revisor aplicadas (validador único, `xmlrpc.ts`, i18n; 73 tests).
+- **Fase 3:** proxy `worker/index.ts` (+ `sesion.ts`, `cookies.ts`, `limite.ts`) empaquetado a `dist/_worker.js`
+  (12 KB), `public/_routes.json`, `wrangler.toml`; 102 tests. Sin `SESSION_SECRET` funciona sin sesiones.
 
 ## Decisiones clave
 
@@ -25,8 +27,9 @@ gimnasio; sesión del foro en token cifrado sin servidor; pruebas con foros real
 
 ## Siguiente
 
-1. Fase 3 (`backend`): `worker/index.ts` según `docs/arquitectura.md` §2–3, con tests y fixtures.
-2. Fase 4 (`frontend`, en paralelo): MVP de la PWA según §4–9.
+1. Fase 4 (`frontend`, en curso): MVP de la PWA según §4–9; unir su rama y resolver conflictos
+   (`package.json`, `vitest.config.ts`).
+2. `qa` + `revisor` sobre Fases 3–4.
 3. Despliegue de prueba para comprobar si Club Tesla acepta peticiones desde un Worker (riesgo §10).
 
 ## Consumo por fase
@@ -35,3 +38,4 @@ gimnasio; sesión del foro en token cifrado sin servidor; pruebas con foros real
 | --- | --- |
 | 0–1 | investigador ~104 k tokens (Haiku); api-foros ~40 k (Sonnet) |
 | 2 | revisor ~29 k (Opus) |
+| 3 | backend ~50 k (Sonnet) |
