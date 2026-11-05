@@ -346,3 +346,68 @@ describe('respuestas problematicas del foro', () => {
     expect(((await r.json()) as { error: string }).error).toBe('red');
   });
 });
+
+describe('correcciones de cierre', () => {
+  it('cuerpo sin Content-Length que supera el tope: 413', async () => {
+    const grande = new TextEncoder().encode(`<methodCall>${'a'.repeat(1024 * 1024)}</methodCall>`);
+    const flujo = new ReadableStream<Uint8Array>({
+      start(c) {
+        for (let i = 0; i < grande.length; i += 65536) c.enqueue(grande.slice(i, i + 65536));
+        c.close();
+      },
+    });
+    const url = `${ORIGEN}/api/xmlrpc?u=${encodeURIComponent(FORO)}`;
+    const req = new Request(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/xml', Origin: ORIGEN, Authorization: `Bearer ${clave}` },
+      body: flujo,
+      duplex: 'half',
+    } as RequestInit);
+    expect(req.headers.get('Content-Length')).toBeNull();
+    const r = await worker.fetch(req, env);
+    expect(r.status).toBe(413);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('cuerpo de respuesta lento que supera el timeout: 502 red', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    fetchMock.mockImplementation(async (_u: string, init: RequestInit) => {
+      const flujo = new ReadableStream<Uint8Array>({
+        start(c) {
+          c.enqueue(new TextEncoder().encode('<methodResponse>'));
+          init.signal?.addEventListener('abort', () => c.error(new Error('abortado')));
+        },
+      });
+      return new Response(flujo, { status: 200 });
+    });
+    const p = pedir();
+    while (fetchMock.mock.calls.length === 0) await new Promise((r) => setImmediate(r));
+    await vi.advanceTimersByTimeAsync(15_100);
+    const r = await p;
+    expect(r.status).toBe(502);
+    expect(((await r.json()) as { error: string }).error).toBe('red');
+  });
+
+  it('30 cookies de 4 KB: el token cabe y se descartan las antiguas', async () => {
+    const cookies = Array.from({ length: 30 }, (_, i) => `c${i}=${'x'.repeat(4000)}; Path=/`);
+    fetchMock.mockImplementationOnce(async () => respuestaForo('<methodResponse/>', cookies));
+    const r = await pedir();
+    expect(r.status).toBe(200);
+    const token = r.headers.get('X-Tertulia-Sesion');
+    expect(token).toBeTruthy();
+    expect(token!.length).toBeLessThanOrEqual(16 * 1024);
+    expect(r.headers.get('X-Tertulia-Sesion-Error')).toBeNull();
+    await pedir({ headers: { 'X-Tertulia-Sesion': token! } });
+    const enviada = cabecerasEnviadas(1)['Cookie'] ?? '';
+    expect(enviada.length).toBeLessThanOrEqual(6 * 1024);
+    expect(enviada).toContain('c29=');
+    expect(enviada).not.toContain('c0=');
+  });
+
+  it('<?xml?>basura: 400 cuerpo', async () => {
+    const r = await pedir({ body: '<?xml version="1.0"?>basura' });
+    expect(r.status).toBe(400);
+    expect(((await r.json()) as { error: string }).error).toBe('cuerpo');
+    expect((await pedir({ body: '<?xml version="1.0"?>\n<methodCall></methodCall>' })).status).toBe(200);
+  });
+});

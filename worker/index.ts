@@ -3,7 +3,7 @@
 import { limpiarHost, validarEndpoint } from '../src/api/validar-endpoint';
 import { cabeceraCookie, combinarCookies, type Cookies } from './cookies';
 import { crearLimite } from './limite';
-import { crearToken, leerToken } from './sesion';
+import { crearToken, leerToken, MAX_TOKEN } from './sesion';
 
 export interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
@@ -54,26 +54,30 @@ async function leerCuerpo(request: Request): Promise<string | Response> {
   if (!tipo.startsWith('text/xml')) return error(400, { error: 'cuerpo' });
   const declarado = Number(request.headers.get('Content-Length') ?? 0);
   if (declarado > MAX_PETICION) return error(413, { error: 'grande' });
-  const buf = await request.arrayBuffer();
-  if (buf.byteLength > MAX_PETICION) return error(413, { error: 'grande' });
+  let buf: Uint8Array<ArrayBuffer> | null;
+  try {
+    buf = await leerFlujo(request.body, MAX_PETICION);
+  } catch {
+    return error(400, { error: 'cuerpo' });
+  }
+  if (!buf) return error(413, { error: 'grande' });
   const texto = new TextDecoder().decode(buf);
-  if (!/^\s*(<\?xml|<methodCall[\s>])/.test(texto)) return error(400, { error: 'cuerpo' });
+  if (!/^\s*(<\?xml[^>]*\?>\s*)?<methodCall[\s>]/.test(texto)) return error(400, { error: 'cuerpo' });
   return texto;
 }
 
-/** Lee el cuerpo del foro con tope; `null` si lo supera. */
-async function leerRespuesta(r: Response): Promise<Uint8Array<ArrayBuffer> | null> {
-  if (Number(r.headers.get('Content-Length') ?? 0) > MAX_RESPUESTA) return null;
-  if (!r.body) return new Uint8Array();
-  const lector = r.body.getReader();
+/** Lee un flujo por trozos con tope; `null` si lo supera. */
+async function leerFlujo(flujo: ReadableStream<Uint8Array> | null, tope: number): Promise<Uint8Array<ArrayBuffer> | null> {
+  if (!flujo) return new Uint8Array();
+  const lector = flujo.getReader();
   const trozos: Uint8Array[] = [];
   let total = 0;
   for (;;) {
     const { done, value } = await lector.read();
     if (done) break;
     total += value.byteLength;
-    if (total > MAX_RESPUESTA) {
-      await lector.cancel();
+    if (total > tope) {
+      await lector.cancel().catch(() => undefined);
       return null;
     }
     trozos.push(value);
@@ -87,18 +91,20 @@ async function leerRespuesta(r: Response): Promise<Uint8Array<ArrayBuffer> | nul
   return salida;
 }
 
-async function llamarForo(url: URL, cuerpo: string, cookies: Cookies): Promise<Response | null> {
+/** Lee el cuerpo del foro con tope; `null` si lo supera. */
+async function leerRespuesta(r: Response): Promise<Uint8Array<ArrayBuffer> | null> {
+  if (Number(r.headers.get('Content-Length') ?? 0) > MAX_RESPUESTA) return null;
+  return leerFlujo(r.body, MAX_RESPUESTA);
+}
+
+async function llamarForo(url: URL, cuerpo: string, cookies: Cookies, signal: AbortSignal): Promise<Response | null> {
   const headers: Record<string, string> = { 'Content-Type': 'text/xml', 'User-Agent': 'Tertulia/1.0' };
   const cookie = cabeceraCookie(cookies);
   if (cookie) headers['Cookie'] = cookie;
-  const ctl = new AbortController();
-  const temporizador = setTimeout(() => ctl.abort(), TIMEOUT_MS);
   try {
-    return await fetch(url.toString(), { method: 'POST', body: cuerpo, headers, redirect: 'manual', signal: ctl.signal });
+    return await fetch(url.toString(), { method: 'POST', body: cuerpo, headers, redirect: 'manual', signal });
   } catch {
     return null;
-  } finally {
-    clearTimeout(temporizador);
   }
 }
 
@@ -114,11 +120,12 @@ function respuestaRedireccion(r: Response, url: URL, hostPropio: string): Respon
   return error(502, cuerpo);
 }
 
-async function sesionNueva(env: Env, host: string, previas: Cookies, r: Response): Promise<string | null> {
+async function sesionNueva(env: Env, host: string, previas: Cookies, r: Response): Promise<string | null | 'grande'> {
   const lineas = r.headers.getSetCookie();
   if (lineas.length === 0 || !env.SESSION_SECRET) return null;
   const ahora = Date.now();
-  return crearToken(env.SESSION_SECRET, host, combinarCookies(previas, lineas, ahora), ahora);
+  const token = await crearToken(env.SESSION_SECRET, host, combinarCookies(previas, lineas, ahora), ahora);
+  return token.length > MAX_TOKEN ? 'grande' : token;
 }
 
 async function xmlrpc(request: Request, env: Env): Promise<Response> {
@@ -139,22 +146,29 @@ async function xmlrpc(request: Request, env: Env): Promise<Response> {
   const token = request.headers.get('X-Tertulia-Sesion') ?? '';
   const previas = (env.SESSION_SECRET && (await leerToken(env.SESSION_SECRET, host, token, Date.now()))) || {};
 
-  const r = await llamarForo(v.url, cuerpo, previas);
-  if (!r) return error(502, { error: 'red' });
-  if (r.status >= 300 && r.status < 400) return respuestaRedireccion(r, v.url, propio.hostname);
-  let datos: Uint8Array<ArrayBuffer> | null;
+  const ctl = new AbortController();
+  const temporizador = setTimeout(() => ctl.abort(), TIMEOUT_MS);
   try {
-    datos = await leerRespuesta(r);
-  } catch {
-    return error(502, { error: 'red' });
-  }
-  if (!datos) return error(502, { error: 'grande' });
+    const r = await llamarForo(v.url, cuerpo, previas, ctl.signal);
+    if (!r) return error(502, { error: 'red' });
+    if (r.status >= 300 && r.status < 400) return respuestaRedireccion(r, v.url, propio.hostname);
+    let datos: Uint8Array<ArrayBuffer> | null;
+    try {
+      datos = await leerRespuesta(r);
+    } catch {
+      return error(502, { error: 'red' });
+    }
+    if (!datos) return error(502, { error: 'grande' });
 
-  const headers = new Headers({ 'Content-Type': 'text/xml; charset=utf-8', ...SEGURAS });
-  const nuevo = await sesionNueva(env, host, previas, r);
-  if (nuevo) headers.set('X-Tertulia-Sesion', nuevo);
-  const sinCuerpo = r.status === 204 || r.status === 205 || r.status === 304;
-  return new Response(sinCuerpo ? null : datos, { status: r.status, headers });
+    const headers = new Headers({ 'Content-Type': 'text/xml; charset=utf-8', ...SEGURAS });
+    const nuevo = await sesionNueva(env, host, previas, r);
+    if (nuevo === 'grande') headers.set('X-Tertulia-Sesion-Error', 'grande');
+    else if (nuevo) headers.set('X-Tertulia-Sesion', nuevo);
+    const sinCuerpo = r.status === 204 || r.status === 205 || r.status === 304;
+    return new Response(sinCuerpo ? null : datos, { status: r.status, headers });
+  } finally {
+    clearTimeout(temporizador);
+  }
 }
 
 function ping(request: Request, env: Env): Response {

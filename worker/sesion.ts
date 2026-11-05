@@ -2,7 +2,7 @@
 import type { Cookies } from './cookies';
 
 export const CADUCIDAD_MS = 30 * 24 * 60 * 60 * 1000;
-const MAX_TOKEN = 16 * 1024;
+export const MAX_TOKEN = 16 * 1024;
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 

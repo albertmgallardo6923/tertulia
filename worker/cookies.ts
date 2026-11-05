@@ -4,6 +4,7 @@ export type Cookies = Record<string, string>;
 
 const MAX_COOKIES = 30;
 const MAX_LONGITUD = 4096;
+export const MAX_TOTAL = 6 * 1024;
 const RE_NOMBRE = /^[\w!#$%&'*+.^`|~-]+$/;
 const RE_VALOR = /^[\x21\x23-\x2b\x2d-\x3a\x3c-\x5b\x5d-\x7e]*$/;
 
@@ -40,6 +41,20 @@ export function parsearSetCookie(linea: string, ahora: number): Parseada | null 
   return { nombre, valor, borrar: valor === '' || haCaducado(atributos, ahora) };
 }
 
+function tamano(mapa: Map<string, string>): number {
+  let t = 0;
+  for (const [n, v] of mapa) t += n.length + v.length + 3;
+  return t;
+}
+
+/** Descarta las cookies más antiguas hasta caber en MAX_TOTAL. */
+function recortar(mapa: Map<string, string>): void {
+  for (const nombre of mapa.keys()) {
+    if (tamano(mapa) <= MAX_TOTAL || mapa.size <= 1) return;
+    mapa.delete(nombre);
+  }
+}
+
 /** Aplica las líneas Set-Cookie sobre las cookies previas; devuelve una copia nueva. */
 export function combinarCookies(previas: Cookies, lineas: string[], ahora: number): Cookies {
   const mapa = new Map(Object.entries(previas));
@@ -47,8 +62,12 @@ export function combinarCookies(previas: Cookies, lineas: string[], ahora: numbe
     const c = parsearSetCookie(linea, ahora);
     if (!c) continue;
     if (c.borrar) mapa.delete(c.nombre);
-    else if (mapa.has(c.nombre) || mapa.size < MAX_COOKIES) mapa.set(c.nombre, c.valor);
+    else if (mapa.has(c.nombre) || mapa.size < MAX_COOKIES) {
+      mapa.delete(c.nombre); // reinsertar al final: la más reciente
+      mapa.set(c.nombre, c.valor);
+    }
   }
+  recortar(mapa);
   return Object.fromEntries(mapa);
 }
 
