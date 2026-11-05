@@ -11,16 +11,17 @@ Actualizado: 5 de noviembre de 2026
 - `scripts/probe-foros.mjs` probado contra un foro simulado: detecta compatible, bloqueo antibots y caído.
 - Fase 1 (parte 1) hecha: `docs/analisis-tapatalk.md` y `docs/mercado.md` (investigador, Haiku, ~104 k tokens).
 
+- Repositorio creado: github.com/albertmgallardo6923/tertulia. Copia en el Mac: Documentos/tertulia.
+- Revisado el repo del gimnasio: HTML único + `sw.js` + `_worker.js` en Cloudflare Pages con KV.
+
 ## Bloqueado (espera al usuario)
 
-- Lista de foros → `docs/foros.md`.
-- Repositorio público `tertulia` en GitHub (+ nombre del repo del gimnasio).
-- Carpeta del ordenador conectada: desde la nube no se llega a los foros.
-- Cuenta gratuita de Cloudflare (hace falta en la Fase 6).
+- Un foro real para probar la API (se prueba con el navegador de la app).
+- Cuenta de Cloudflare: ya existe (la usa el gimnasio); hará falta en la Fase 6.
 
 ## Siguiente
 
-1. Con la lista: `node scripts/probe-foros.mjs docs/foros.md` desde el ordenador del usuario.
+1. Con un foro real: `get_config` desde el navegador de la app y grabar el fixture.
 2. Comprobación de la Fase 0: al menos un foro compatible.
 3. Fase 1, parte 2: subagente `api-foros` (fixtures y contrato).
 

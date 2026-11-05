@@ -2,7 +2,8 @@
 
 PWA instalable en iPhone para leer y participar en los foros que el usuario seguía en Tapatalk.
 Habla con cada foro mediante la API XML-RPC del plugin de Tapatalk (`/mobiquo/mobiquo.php`),
-a través de un proxy propio en Cloudflare Workers. Presupuesto: 0 €.
+a través de un proxy propio. Se aloja en Cloudflare Pages con `_worker.js` (app y proxy en el
+mismo origen), igual que Cuaderno de Hierro (`albertmgallardo6923/cuaderno-hierro-deploy`). Presupuesto: 0 €.
 
 Prompt completo y fuente de verdad del plan: https://claude.ai/artifact/M5rqswC3h9MpC5mrwZc9QG
 Estado actual: `docs/estado.md` (léelo al empezar cualquier sesión; no vuelvas a explorar).
@@ -24,7 +25,8 @@ Estado actual: `docs/estado.md` (léelo al empezar cualquier sesión; no vuelvas
 src/            PWA (Vite + TypeScript + Preact)
   api/          cliente XML-RPC tipado (lo escribe api-foros)
   i18n/es.json  todos los textos de la interfaz
-worker/         Cloudflare Worker: proxy, tarea programada, Web Push
+worker/         `_worker.js` de Pages: proxy XML-RPC (se copia a dist/ al compilar)
+avisos/         Worker aparte con tarea programada y Web Push (v1)
 tests/fixtures/ respuestas reales grabadas, recortadas (≤ 20 mensajes por tema)
 docs/           estado, decisiones, foros, contrato de API, análisis
 .claude/agents/ subagentes (ver tabla abajo)
@@ -35,7 +37,7 @@ docs/           estado, decisiones, foros, contrato de API, análisis
 - `npm ci --silent` · `npm run dev` · `npm run build`
 - `npm test` (Vitest, reporter dot; el hook deja pasar solo los fallos)
 - `npm run test:e2e` (Playwright, solo WebKit, tamaño iPhone)
-- `cd worker && npx wrangler dev` (proxy local) · `npx wrangler deploy` (solo desde CI)
+- `npx wrangler pages dev dist` (app + proxy en local) · despliegue: Cloudflare Pages conectado a GitHub
 
 ## Subagentes
 
