@@ -44,7 +44,7 @@ Otras apps vistas en búsquedas y no verificadas: Forum Copilot y ThreadMaster (
 
 1. **Quitar el plugin.** Algunos administradores retiran el plugin de Tapatalk. Cuántos lo hacen: sin confirmar. Mitigación: detectar el fallo y pasar a la vía web.
 2. **API abandonada.** Forum Fiend dice que la API de Tapatalk parece abandonada. Si Tapatalk cambia o corta el acceso, la app deja de funcionar con esos foros.
-3. **Protección de Cloudflare (error 403).** Hay hilos de usuarios con 403 al conectar desde apps. Detalle y frecuencia: sin confirmar. Mitigación: un Worker que reenvíe las peticiones con cabeceras normales y mensaje de error claro.
+3. **Protección de Cloudflare (error 403).** Hay hilos de usuarios con 403 al conectar desde apps. Detalle y frecuencia: sin confirmar. Mitigación: detectarlo en la Fase 0 y marcar el foro como no compatible; no se esquiva el bloqueo (ver límites del prompt).
 4. **Cambios en la API XML-RPC.** No encontré documentación oficial pública y estable. Hay que tratar la API como no fiable y revisar cada respuesta.
 5. **iOS y la PWA.** En iPhone, las notificaciones push y la instalación dependen de la versión de iOS y de que la PWA esté añadida a la pantalla de inicio. Sin confirmar en el estado actual.
 6. **Términos de uso.** Tapatalk puede prohibir clientes de terceros. No revisé sus condiciones: hay que leerlas antes de publicar nada.
