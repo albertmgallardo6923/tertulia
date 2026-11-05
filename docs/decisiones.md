@@ -15,3 +15,8 @@ Una línea por decisión: fecha · decisión · motivo.
 - 2026-11-05 · Avisos push (v1) en un Worker aparte `tertulia-avisos` con tarea programada · Pages Functions no admite cron.
 - 2026-11-05 · Pruebas de foros reales con el navegador de la app (fetch desde la propia web del foro) · ni la nube ni el terminal del Mac llegan a los foros.
 - 2026-11-05 · Se ignora la nota del investigador sobre push en iOS (artículo de 2020) · desde iOS 16.4 las web apps de pantalla de inicio sí reciben push y contador; verificado en el prompt.
+- 2026-11-05 · Prueba de clave sin contactar con ningún foro: `/api/ping` + POST con `u` vacío; el proxy comprueba la clave antes que la dirección (401 `clave` = mala, 400 `direccion` = buena) · evita una dirección de foro fija en el código.
+- 2026-11-05 · Id de foro = host (+ ruta) del endpoint · permite guardar la sesión del proxy antes de terminar de añadir el foro (login en el alta).
+- 2026-11-05 · Colores y tamaños de BBCode como clases `bb-*` de una paleta cerrada, sin `style` · la lista de atributos permitidos no incluye `style`.
+- 2026-11-05 · Tests de saneado en happy-dom con `tests/setup.ts` (nodeName polimórfico) y vectores aislados · DOMPurify ≥ 3.4 y el NodeIterator de happy-dom no recorren bien los hijos de un nodo eliminado; los vectores combinados se comprobaron en Chromium real.
+- 2026-11-05 · El borrador de tema nuevo se guarda con clave `borrador:<foroId>:nuevo-<subforoId>` · evita mezclar borradores de secciones distintas.

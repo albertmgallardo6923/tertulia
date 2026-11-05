@@ -1,5 +1,161 @@
 {
+  "comun": {
+    "atras": "Atrás",
+    "cargando": "Cargando…",
+    "reintentar": "Reintentar",
+    "cancelar": "Cancelar",
+    "enviando": "Enviando…",
+    "proximamente": "Próximamente"
+  },
+  "pestanas": {
+    "etiqueta": "Secciones",
+    "novedades": "Novedades",
+    "foros": "Foros",
+    "mensajes": "Mensajes",
+    "avisos": "Avisos",
+    "yo": "Yo"
+  },
+  "bienvenida": {
+    "titulo": "Bienvenido a Tertulia",
+    "intro": "Tertulia es tu lector de foros. Para usarla con comodidad, instálala en la pantalla de inicio de tu iPhone.",
+    "comoInstalar": "Cómo instalarla desde Safari",
+    "paso1": "Abre esta página en Safari y toca el botón Compartir, el cuadrado con una flecha hacia arriba, en la barra inferior.",
+    "paso2": "Desplázate por el menú y toca «Añadir a pantalla de inicio».",
+    "paso3": "Toca «Añadir», arriba a la derecha.",
+    "paso4": "Abre Tertulia desde el icono de tu pantalla de inicio. Ya no hace falta Safari.",
+    "nota": "La app instalada guarda sus datos aparte de Safari, así que tus foros y tu clave se piden y se guardan solo dentro de ella."
+  },
+  "clave": {
+    "titulo": "Clave de la app",
+    "intro": "Escribe la clave de acceso que te dieron para usar esta app. Se guarda solo en este dispositivo.",
+    "campo": "Clave de la app",
+    "entrar": "Continuar",
+    "probando": "Comprobando…",
+    "vacia": "Escribe la clave de la app."
+  },
+  "novedades": {
+    "sinForos": "Aún no tienes foros",
+    "sinForosTexto": "Añade un foro para ver aquí sus novedades.",
+    "alDia": "Estás al día",
+    "alDiaTexto": "No hay temas con novedades en tus foros.",
+    "foroAlDia": "Sin novedades en este foro.",
+    "noLeidos": "No leídos",
+    "ultimos": "Últimos temas"
+  },
+  "foros": {
+    "anadir": "Añadir foro",
+    "anadirIntro": "Escribe la dirección del foro, por ejemplo foro.ejemplo.es. Probaremos cómo conectarnos.",
+    "direccion": "Dirección del foro",
+    "direccionEjemplo": "foro.ejemplo.es",
+    "buscar": "Buscar foro",
+    "buscando": "Buscando…",
+    "encontrado": "Foro compatible encontrado ({version}).",
+    "sesionIntro": "Inicia sesión para participar y ver tus no leídos, o entra como invitado.",
+    "sinInvitados": "Este foro no permite entrar como invitado.",
+    "vacio": "No hay foros",
+    "vacioTexto": "Toca el botón + para añadir el primero.",
+    "conSesion": "Sesión de {usuario}",
+    "invitado": "Invitado",
+    "noExiste": "Este foro ya no está en tu lista.",
+    "sinSubforos": "Este foro no tiene secciones."
+  },
+  "login": {
+    "titulo": "Iniciar sesión",
+    "intro": "Entra en {foro} con tu cuenta. La contraseña no se guarda en la app.",
+    "usuario": "Usuario",
+    "clave": "Contraseña",
+    "entrar": "Iniciar sesión",
+    "entrando": "Entrando…",
+    "invitado": "Entrar como invitado",
+    "vacio": "Escribe tu usuario y tu contraseña.",
+    "fallo": "No se pudo iniciar sesión. Revisa tus datos."
+  },
+  "temas": {
+    "titulo": "Temas",
+    "vacio": "No hay temas",
+    "vacioTexto": "Esta sección aún no tiene temas.",
+    "respuestas": "{n} resp.",
+    "nuevos": "Con mensajes nuevos",
+    "fijado": "Tema fijado"
+  },
+  "paginas": {
+    "etiqueta": "Páginas",
+    "anterior": "Anterior",
+    "siguiente": "Siguiente",
+    "de": "Página {n} de {total}"
+  },
+  "tema": {
+    "titulo": "Tema",
+    "nuevo": "Tema nuevo",
+    "asunto": "Asunto",
+    "escribe": "Escribe tu mensaje",
+    "borradorAuto": "El borrador se guarda solo en este dispositivo.",
+    "publicar": "Publicar tema",
+    "enviar": "Enviar",
+    "responder": "Responder",
+    "citar": "Citar",
+    "ultimo": "Último",
+    "marcarLeido": "Marcar como leído",
+    "leido": "Tema marcado como leído.",
+    "errorLeido": "No se pudo marcar como leído.",
+    "errorEnviar": "El foro no ha aceptado el mensaje.",
+    "cerrado": "Cerrado",
+    "mensajes": "{n} mensajes",
+    "sinMensajes": "Esta página no tiene mensajes.",
+    "sinConexion": "No se pudo actualizar; se muestra lo guardado.",
+    "iniciaParaResponder": "Inicia sesión para responder",
+    "necesitaSesion": "Necesitas iniciar sesión para crear un tema.",
+    "nuevoVacio": "Escribe un asunto y un mensaje."
+  },
+  "yo": {
+    "cuentas": "Cuentas por foro",
+    "sinCuentas": "Aún no has añadido ningún foro.",
+    "cerrarSesion": "Cerrar sesión",
+    "quitar": "Quitar",
+    "confirmarQuitar": "¿Quitar {foro} de tu lista?",
+    "ajustes": "Ajustes",
+    "imagenes": "Cargar imágenes",
+    "imagenesSiempre": "Siempre",
+    "imagenesTocar": "Al tocar",
+    "imagenesAyuda": "Las imágenes de otros servidores les dejan ver tu dirección IP. Con «Al tocar» solo se cargan si las pulsas.",
+    "letra": "Tamaño de letra",
+    "letraPequena": "Pequeña",
+    "letraNormal": "Normal",
+    "letraGrande": "Grande",
+    "letraEnorme": "Enorme",
+    "claveApp": "Clave de la app",
+    "cambiarClave": "Cambiar",
+    "acerca": "Acerca de",
+    "version": "versión {v}",
+    "acercaTexto": "Lector de foros independiente. Funciona con foros que ofrecen el conector de Tapatalk y no está afiliada a esa empresa. Tus contraseñas nunca se guardan.",
+    "demo": "Estás viendo el modo demostración con datos de ejemplo; no se usa la red."
+  },
+  "mensajes": {
+    "proximamente": "Aquí verás tus mensajes privados."
+  },
+  "avisos": {
+    "proximamente": "Aquí recibirás los avisos de tus foros."
+  },
+  "contenido": {
+    "spoiler": "Spoiler",
+    "cargarImagen": "Toca para cargar la imagen"
+  },
   "errores": {
+    "titulo": "Algo ha fallado",
+    "generico": "Ha ocurrido un error inesperado. Inténtalo de nuevo.",
+    "noCompatible": "Este foro no tiene el plugin de Tapatalk o bloquea apps externas.",
+    "foroCerrado": "El foro está cerrado ahora mismo.",
+    "proxy": {
+      "origen": "La app no tiene permiso desde este origen.",
+      "clave": "La clave de la app no es correcta. Cámbiala en Yo.",
+      "direccion": "La dirección del foro no es válida.",
+      "cuerpo": "La petición no es válida.",
+      "grande": "La respuesta del foro es demasiado grande.",
+      "limite": "Demasiadas peticiones seguidas. Espera un momento.",
+      "redireccion": "El foro ha cambiado de dirección.",
+      "red": "No se pudo conectar. Revisa tu conexión.",
+      "metodo": "Petición no permitida."
+    },
     "direccion": {
       "vacio": "Escribe la dirección del foro.",
       "esquema": "Solo se admiten direcciones seguras que empiecen por https.",

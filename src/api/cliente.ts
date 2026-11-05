@@ -243,6 +243,11 @@ export class ClienteForo {
     return aAccion(o, 'topic_id');
   }
 
+  /** Cierra la sesión en el foro (el proxy borra la cookie; la app descarta el token). */
+  async logout(): Promise<ResultadoAccion> {
+    return aAccion(await this.llamarEstructura('logout_user'), 'user_id');
+  }
+
   async getSuscritos(desde: number, hasta: number): Promise<ResultadoTemas> {
     return aResultadoTemas(await this.llamarEstructura('get_subscribed_topic', [desde, hasta]));
   }

@@ -13,6 +13,10 @@ Actualizado: 5 de noviembre de 2026, 21:50
 - **Fase 2:** `docs/arquitectura.md` revisada por el `revisor` (sin críticos, 7 importantes aplicados).
   En curso: correcciones de código del revisor (validador único de endpoints, `xmlrpc.ts`, i18n).
 
+- **Fase 4 (frontend):** MVP de la PWA en `src/` (transporte, datos, contenido, ui), modo `?demo` con fixtures,
+  iconos, `public/_headers`, tests (`tests/ui`, `tests/contenido`, `tests/transporte.test.ts`) y capturas en `docs/capturas/`.
+  Pendiente: probar con el proxy real (Fase 3) y con foros reales; Mensajes y Avisos son «Próximamente».
+
 ## Decisiones clave
 
 Ver `docs/decisiones.md`. Resumen: foros añadidos por el usuario; Cloudflare Pages + `_worker.js` como el
