@@ -1,8 +1,9 @@
-# Foros
+# Foros de prueba
 
-Una fila por foro. `url` es la raíz del foro (donde está `/mobiquo/`).
-El script `scripts/probe-foros.mjs` lee las URL de esta tabla y rellena el estado en `docs/foros-estado.md`.
+En la app no hay lista fija: el usuario añade los foros que quiera escribiendo su dirección.
+Esta tabla solo sirve para que `scripts/probe-foros.mjs` compruebe foros públicos durante el desarrollo
+(solo `get_config`, sin credenciales). Añade aquí los del usuario cuando los pruebe.
 
 | nombre | url | tengo usuario |
 | --- | --- | --- |
-| (pendiente) | https://ejemplo.com/foro | sí |
+| (pendiente) | https://ejemplo.com/foro | no |

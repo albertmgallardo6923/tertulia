@@ -13,7 +13,9 @@ Estado actual: `docs/estado.md` (léelo al empezar cualquier sesión; no vuelvas
 - Solo foros donde el usuario tiene cuenta, a ritmo humano (caché + límite de peticiones).
 - Si un foro bloquea clientes externos, se marca como no compatible; no se esquiva.
 - Contraseñas y tokens nunca en el código, el repositorio ni los logs.
-- El proxy solo acepta dominios de `docs/foros.md` (nunca un proxy abierto).
+- Los foros los añade el usuario desde la app (como en Tapatalk), así que no hay lista fija.
+  El proxy nunca es abierto: exige la clave de acceso de la app, solo va a `https://…/mobiquo.php`,
+  solo acepta cuerpos XML-RPC, rechaza IP privadas, `localhost` e IP literales (SSRF) y limita peticiones.
 - Todo HTML que venga de un foro se sanea (DOMPurify) antes de pintarse.
 
 ## Estructura
