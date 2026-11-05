@@ -1,0 +1,28 @@
+{
+  "name": "tertulia",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Lector de foros PWA para iPhone, compatible con la API de Tapatalk",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run --reporter=dot",
+    "test:e2e": "playwright test --project=iphone",
+    "probe": "node scripts/probe-foros.mjs docs/foros.md"
+  },
+  "dependencies": {
+    "dompurify": "^3.2.0",
+    "idb-keyval": "^6.2.1",
+    "preact": "^10.26.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "@preact/preset-vite": "^2.10.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0",
+    "vite-plugin-pwa": "^1.0.0",
+    "vitest": "^3.0.0"
+  }
+}
