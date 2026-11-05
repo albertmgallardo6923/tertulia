@@ -1,0 +1,15 @@
+{
+  "errores": {
+    "direccion": {
+      "vacio": "Escribe la dirección del foro.",
+      "esquema": "Solo se admiten direcciones seguras que empiecen por https.",
+      "ip": "No se admiten direcciones IP: usa el nombre del foro, por ejemplo foro.ejemplo.es.",
+      "host-interno": "Esa dirección es de una red interna y no se puede usar.",
+      "puerto": "No se admiten puertos especiales: usa la dirección normal del foro.",
+      "ruta": "La dirección no apunta al conector del foro.",
+      "credenciales": "No escribas usuario ni contraseña en la dirección. Se piden después.",
+      "consulta": "Quita de la dirección todo lo que vaya después de un ? o un #.",
+      "host-propio": "Esa dirección es la de esta misma aplicación, no la de un foro."
+    }
+  }
+}

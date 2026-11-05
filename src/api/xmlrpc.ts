@@ -42,15 +42,22 @@ export function textoABase64(texto: string): string {
 export function base64ATexto(b64: string): string {
   const limpio = b64.replace(/\s+/g, '');
   if (!limpio) return '';
-  const bin = atob(limpio);
-  const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
-  return new TextDecoder('utf-8').decode(bytes);
+  try {
+    const bin = atob(limpio);
+    const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+    return new TextDecoder('utf-8').decode(bytes);
+  } catch {
+    throw new ErrorXmlRpc(-1, 'Base64 no válido');
+  }
 }
 
 // ---------- serialización ----------
 
+// Caracteres de control no permitidos en XML 1.0.
+const RE_CONTROL = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g;
+
 function escaparXml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return s.replace(RE_CONTROL, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function serializarValor(v: ValorEnvio): string {
@@ -102,6 +109,19 @@ function hijosElemento(el: Element): Element[] {
   return Array.from(el.children);
 }
 
+function leerEntero(texto: string): number {
+  const t = texto.trim();
+  if (!/^[+-]?\d+$/.test(t)) throw new ErrorXmlRpc(-1, `Entero no válido: ${t.slice(0, 20)}`);
+  return parseInt(t, 10);
+}
+
+function leerDecimal(texto: string): number {
+  const t = texto.trim();
+  const n = t === '' ? NaN : Number(t);
+  if (Number.isNaN(n)) throw new ErrorXmlRpc(-1, `Decimal no válido: ${t.slice(0, 20)}`);
+  return n;
+}
+
 function parsearValor(el: Element): Valor {
   const tipo = hijosElemento(el)[0];
   if (!tipo) return el.textContent ?? ''; // <value>texto</value> es string
@@ -112,9 +132,9 @@ function parsearValor(el: Element): Valor {
     case 'int':
     case 'i4':
     case 'i8':
-      return parseInt(texto, 10);
+      return leerEntero(texto);
     case 'double':
-      return parseFloat(texto);
+      return leerDecimal(texto);
     case 'boolean':
       return texto.trim() === '1' || texto.trim().toLowerCase() === 'true';
     case 'base64':
@@ -134,12 +154,14 @@ function parsearValor(el: Element): Valor {
   }
 }
 
+const NOMBRES_PROHIBIDOS = new Set(['__proto__', 'constructor', 'prototype']);
+
 function parsearEstructura(el: Element): Estructura {
-  const salida: Estructura = {};
+  const salida: Estructura = Object.create(null) as Estructura;
   for (const miembro of hijosElemento(el).filter((e) => e.tagName === 'member')) {
     const nombre = hijosElemento(miembro).find((e) => e.tagName === 'name')?.textContent ?? '';
     const valor = hijosElemento(miembro).find((e) => e.tagName === 'value');
-    if (nombre && valor) salida[nombre] = parsearValor(valor);
+    if (nombre && valor && !NOMBRES_PROHIBIDOS.has(nombre)) salida[nombre] = parsearValor(valor);
   }
   return salida;
 }
