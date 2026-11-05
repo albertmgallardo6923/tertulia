@@ -9,3 +9,6 @@ test-results/
 
 # Copias de trabajo temporales de los subagentes
 .claude/worktrees/
+
+# Claves locales (nunca al repositorio)
+SECRETOS*.txt
