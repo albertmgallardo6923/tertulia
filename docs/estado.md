@@ -15,6 +15,10 @@ Actualizado: 5 de noviembre de 2026, 21:50
 - **Fase 3:** proxy `worker/index.ts` (+ `sesion.ts`, `cookies.ts`, `limite.ts`) empaquetado a `dist/_worker.js`
   (12 KB), `public/_routes.json`, `wrangler.toml`; 102 tests. Sin `SESSION_SECRET` funciona sin sesiones.
 
+- **Fase 4 (frontend):** MVP de la PWA en `src/` (transporte, datos, contenido, ui), modo `?demo` con fixtures,
+  iconos, `public/_headers`, tests (`tests/ui`, `tests/contenido`, `tests/transporte.test.ts`) y capturas en `docs/capturas/`.
+  Pendiente: probar con el proxy real (Fase 3) y con foros reales; Mensajes y Avisos son «Próximamente».
+
 ## Decisiones clave
 
 Ver `docs/decisiones.md`. Resumen: foros añadidos por el usuario; Cloudflare Pages + `_worker.js` como el

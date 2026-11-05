@@ -101,10 +101,11 @@ describe('ClienteForo con fixtures de Club Tesla', () => {
     await cliente.getNoLeidos(0, 19);
     await cliente.getSuscritos(0, 19);
     await cliente.getTemas('3', 0, 19, 'TOP');
+    await cliente.logout();
     const metodos = enviados.map((x) => /<methodName>(\w+)</.exec(x)?.[1]);
     expect(metodos).toEqual([
       'reply_post', 'new_topic', 'mark_topic_read', 'mark_all_as_read',
-      'get_unread_topic', 'get_subscribed_topic', 'get_topic',
+      'get_unread_topic', 'get_subscribed_topic', 'get_topic', 'logout_user',
     ]);
     expect(enviados[6]).toContain('<string>TOP</string>');
     expect(cliente).toBeInstanceOf(ClienteForo);
