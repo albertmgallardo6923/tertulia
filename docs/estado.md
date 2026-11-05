@@ -19,6 +19,10 @@ Actualizado: 5 de noviembre de 2026, 21:50
   iconos, `public/_headers`, tests (`tests/ui`, `tests/contenido`, `tests/transporte.test.ts`) y capturas en `docs/capturas/`.
   Pendiente: probar con el proxy real (Fase 3) y con foros reales; Mensajes y Avisos son «Próximamente».
 
+- **Fase 4:** app MVP + rediseño «Sala de lectura nocturna» (`docs/diseno.md`, oscuro por defecto) tras el
+  rechazo del primer diseño; correcciones de la revisión de cierre (sin críticos) en proxy y contenido.
+  208 tests; build con fuentes empaquetadas (precache 434 KB). Capturas en `docs/capturas/`.
+
 ## Decisiones clave
 
 Ver `docs/decisiones.md`. Resumen: foros añadidos por el usuario; Cloudflare Pages + `_worker.js` como el
@@ -31,10 +35,10 @@ gimnasio; sesión del foro en token cifrado sin servidor; pruebas con foros real
 
 ## Siguiente
 
-1. Fase 4 (`frontend`, en curso): MVP de la PWA según §4–9; unir su rama y resolver conflictos
-   (`package.json`, `vitest.config.ts`).
-2. `qa` + `revisor` sobre Fases 3–4.
-3. Despliegue de prueba para comprobar si Club Tesla acepta peticiones desde un Worker (riesgo §10).
+1. Fase 6: publicar en Cloudflare Pages (proyecto `tertulia` conectado al repo; secretos `APP_KEY` y
+   `SESSION_SECRET` los escribe el usuario) y comprobar si Club Tesla acepta peticiones desde el Worker.
+2. Prueba real en el iPhone: instalar, añadir foro, iniciar sesión, responder.
+3. Fase 5 (v1): mensajes privados, avisos push, búsqueda, fotos.
 
 ## Consumo por fase
 
@@ -42,4 +46,5 @@ gimnasio; sesión del foro en token cifrado sin servidor; pruebas con foros real
 | --- | --- |
 | 0–1 | investigador ~104 k tokens (Haiku); api-foros ~40 k (Sonnet) |
 | 2 | revisor ~29 k (Opus) |
-| 3 | backend ~50 k (Sonnet) |
+| 3 | backend ~50 k + ~29 k (Sonnet) |
+| 4 | frontend ~201 k + ~234 k rediseño (Sonnet); revisor ~53 k (Opus) |

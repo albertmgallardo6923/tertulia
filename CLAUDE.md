@@ -58,8 +58,8 @@ Comprueba con `/tasks` que cada subagente corre en su modelo. Nada de agent team
 
 - TypeScript estricto. Funciones pequeñas. Sin dependencias pesadas (pregunta antes de añadir una).
 - Textos de la interfaz solo en `src/i18n/es.json`. Español de España, tuteo.
-- Estilo iOS: fuente del sistema, títulos grandes, barra de pestañas inferior, zonas seguras,
-  claro/oscuro automáticos, acento terracota `#C2562F`.
+- Diseño: `docs/diseno.md` («Sala de lectura nocturna»): oscuro por defecto, Literata + Instrument Sans,
+  tinta `#10141C`, papel `#ECE6DA`, acento latón `#D6A85C`; el hilo con línea y nudos. Sin tarjetas ni mayúsculas.
 - Pestañas: Novedades, Foros, Mensajes, Avisos, Yo.
 - El XML-RPC se interpreta en el cliente (`DOMParser`); el Worker solo reenvía (≤ 10 ms CPU).
 - Los tests nunca tocan foros reales: usan `tests/fixtures/`.

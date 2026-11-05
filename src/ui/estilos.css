@@ -126,10 +126,9 @@ button { font-family: inherit; color: inherit; }
   user-select: none;
   -webkit-user-select: none;
 }
+/* Opaca: el texto del hilo no debe verse bajo el título (con o sin desenfoque). */
 .barra--compacta {
-  background: var(--superficie-92);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  background: var(--tinta);
   border-bottom-color: var(--linea);
 }
 .barra-titulo {
@@ -625,6 +624,12 @@ html[data-tema='claro'] .bb-color-brown { color: #6d4c41; }
   border-top: 1px solid var(--linea);
   user-select: none;
   -webkit-user-select: none;
+}
+/* Sin desenfoque, la barra translúcida dejaría ver el texto: se vuelve opaca. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .pestanas {
+    background: var(--superficie);
+  }
 }
 .pestana {
   flex: 1;
