@@ -8,7 +8,8 @@ import { t } from '../../i18n';
 import { ClienteForo } from '../../api/cliente';
 import { Aviso, Cargando, ErrorEstado, Pantalla, Vacio } from '../componentes';
 import { hrefDe, ir, mensajeError, useCarga } from '../hooks';
-import { IcoChevron, IcoMas } from '../iconos';
+import { IcoAtras, IcoChevron, IcoMas } from '../iconos';
+import { numeroEs } from '../../contenido/fechas';
 import { FilaTema } from './FilaTema';
 
 // ---------- lista de foros añadidos ----------
@@ -34,13 +35,16 @@ export function ListaForos() {
     );
   } else {
     cuerpo = (
-      <div class="lista">
+      <nav class="lista-foros" aria-label={t('pestanas.foros')}>
         {foros.map((f) => (
-          <a key={f.id} class="fila" href={hrefDe('foros', f.id)}>
-            <span class="fila-cuerpo">
-              <span class="fila-titulo">{f.nombre}</span>
-              <span class="fila-meta">
-                {f.usuario ? t('foros.conSesion', { usuario: f.usuario }) : t('foros.invitado')}
+          <a key={f.id} class="fila-foro" href={hrefDe('foros', f.id)}>
+            <span class="fila-foro-cuerpo">
+              <span class="fila-foro-nombre">{f.nombre}</span>
+              <span class="fila-foro-meta">
+                <span>{f.host}</span>
+                <span class={f.usuario ? 'meta-sesion' : ''}>
+                  {f.usuario ? t('foros.conSesion', { usuario: f.usuario }) : t('foros.invitado')}
+                </span>
               </span>
             </span>
             <span class="fila-chevron">
@@ -48,7 +52,7 @@ export function ListaForos() {
             </span>
           </a>
         ))}
-      </div>
+      </nav>
     );
   }
   return (
@@ -271,34 +275,32 @@ export function ArbolForo({ foroId }: { foroId: string }) {
   else if (d.arbol.length === 0) cuerpo = <Vacio titulo={t('foros.sinSubforos')} />;
   else {
     cuerpo = (
-      <div class="lista">
-        {aplanar(d.arbol).map(({ foro, nivel }) =>
-          foro.soloCategoria ? (
-            <div key={foro.id} class="fila fila--categoria" style={{ paddingLeft: `${16 + nivel * 18}px` }}>
-              {foro.nombre}
+      <div class="arbol">
+        {aplanar(d.arbol).map(({ foro, nivel }) => {
+          const guias = Array.from({ length: nivel }, (_, i) => <span key={i} class="arbol-guia" />);
+          return foro.soloCategoria ? (
+            <div key={foro.id} class="arbol-fila arbol-fila--categoria">
+              {guias}
+              <span class="arbol-contenido">{foro.nombre}</span>
             </div>
           ) : (
-            <a
-              key={foro.id}
-              class="fila"
-              style={{ paddingLeft: `${16 + nivel * 18}px` }}
-              href={hrefDe('foros', foroId, 'f', foro.id)}
-            >
-              <span class={`punto${foro.hayNuevos ? ' punto--nuevo' : ''}`} />
-              <span class="fila-cuerpo">
-                <span class="fila-titulo">{foro.nombre}</span>
-              </span>
-              <span class="fila-chevron">
-                <IcoChevron />
+            <a key={foro.id} class="arbol-fila" href={hrefDe('foros', foroId, 'f', foro.id)}>
+              {guias}
+              <span class="arbol-contenido">
+                <span class="fila-tema-punto">{foro.hayNuevos && <span class="punto" />}</span>
+                <span class="arbol-nombre">{foro.nombre}</span>
+                <span class="fila-chevron">
+                  <IcoChevron />
+                </span>
               </span>
             </a>
-          ),
-        )}
+          );
+        })}
       </div>
     );
   }
   return (
-    <Pantalla titulo={d?.foro.nombre ?? t('pestanas.foros')} atras={['foros']} onRecargar={carga.recargar}>
+    <Pantalla titulo={d?.foro.nombre ?? t('pestanas.foros')} atras={['foros']} atrasTexto={t('pestanas.foros')} onRecargar={carga.recargar}>
       {cuerpo}
     </Pantalla>
   );
@@ -313,16 +315,18 @@ export function Paginador({ pagina, total, enlace }: { pagina: number; total: nu
   return (
     <nav class="paginador" aria-label={t('paginas.etiqueta')}>
       {pagina > 1 ? (
-        <a class="btn btn-secundario" href={enlace(pagina - 1)}>
+        <a class="btn-texto" href={enlace(pagina - 1)}>
+          <IcoAtras />
           {t('paginas.anterior')}
         </a>
       ) : (
         <span />
       )}
-      <span class="paginador-estado">{t('paginas.de', { n: pagina, total })}</span>
+      <span class="paginador-estado">{t('paginas.de', { n: numeroEs(pagina), total: numeroEs(total) })}</span>
       {pagina < total ? (
-        <a class="btn btn-secundario" href={enlace(pagina + 1)}>
+        <a class="btn-texto" href={enlace(pagina + 1)}>
           {t('paginas.siguiente')}
+          <IcoChevron />
         </a>
       ) : (
         <span />
@@ -378,9 +382,9 @@ export function ListaTemas({ foroId, subforoId, pagina }: { foroId: string; subf
     cuerpo = (
       <>
         {carga.error !== undefined && <Aviso error={carga.error} />}
-        <div class="lista">
+        <div class="lista-temas">
           {d.temas.map((tema) => (
-            <FilaTema key={tema.id} foroId={foroId} tema={tema} />
+            <FilaTema key={tema.id} foroId={foroId} tema={tema} conSesion={!!d.foro.usuario} />
           ))}
         </div>
         <Paginador
@@ -395,6 +399,7 @@ export function ListaTemas({ foroId, subforoId, pagina }: { foroId: string; subf
     <Pantalla
       titulo={d?.nombre ?? t('temas.titulo')}
       atras={['foros', foroId]}
+      atrasTexto={d?.foro.nombre}
       acciones={acciones}
       onRecargar={carga.recargar}
     >

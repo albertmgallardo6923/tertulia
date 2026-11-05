@@ -26,3 +26,20 @@ describe('fechaRelativa', () => {
     expect(fechaRelativa(new Date(NaN), ahora)).toBe('');
   });
 });
+
+describe('numeroEs e iniciales', () => {
+  it('agrupa miles también con 4 cifras', async () => {
+    const { numeroEs } = await import('../../src/contenido/fechas');
+    expect(numeroEs(5482)).toBe('5.482');
+    expect(numeroEs(12)).toBe('12');
+    expect(numeroEs(1234567)).toBe('1.234.567');
+  });
+
+  it('iniciales del autor', async () => {
+    const { iniciales } = await import('../../src/contenido/nombres');
+    expect(iniciales('usuario3')).toBe('US');
+    expect(iniciales('Ana López')).toBe('AL');
+    expect(iniciales('mario_gil')).toBe('MG');
+    expect(iniciales('')).toBe('?');
+  });
+});

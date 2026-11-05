@@ -1,21 +1,22 @@
 import type { Tema } from '../../api/tipos';
-import { fechaCompleta, fechaRelativa } from '../../contenido/fechas';
+import { fechaCompleta, fechaRelativa, numeroEs } from '../../contenido/fechas';
 import { t } from '../../i18n';
 import { hrefDe } from '../hooks';
-import { IcoChevron, IcoFijado } from '../iconos';
+import { IcoBocadillo, IcoFijado } from '../iconos';
 
-/** Fila de tema. Todo se pinta como texto (nunca como HTML). */
-export function FilaTema({ foroId, tema }: { foroId: string; tema: Tema }) {
-  const meta = [
-    tema.autor,
-    fechaRelativa(tema.fecha),
-    t('temas.respuestas', { n: tema.respuestas }),
-  ].filter(Boolean);
+/**
+ * Fila de tema, sin tarjeta. Todo se pinta como texto (nunca como HTML).
+ * `conSesion` indica si el foro informa de lo leído: sin sesión no hay «leído», así que no se atenúa.
+ */
+export function FilaTema({ foroId, tema, conSesion = true }: { foroId: string; tema: Tema; conSesion?: boolean }) {
+  const leido = conSesion && !tema.hayNuevos;
   return (
-    <a class="fila fila--tema" href={hrefDe('foros', foroId, 't', tema.id)}>
-      <span class={`punto${tema.hayNuevos ? ' punto--nuevo' : ''}`} aria-label={tema.hayNuevos ? t('temas.nuevos') : undefined} />
-      <span class="fila-cuerpo">
-        <span class="fila-titulo">
+    <a class={`fila-tema${leido ? ' fila-tema--leido' : ''}`} href={hrefDe('foros', foroId, 't', tema.id)}>
+      <span class="fila-tema-punto">
+        {tema.hayNuevos && <span class="punto" role="img" aria-label={t('temas.nuevos')} />}
+      </span>
+      <span class="fila-tema-cuerpo">
+        <span class="fila-tema-titulo">
           {tema.fijo && (
             <span class="fijado" title={t('temas.fijado')}>
               <IcoFijado />
@@ -23,13 +24,17 @@ export function FilaTema({ foroId, tema }: { foroId: string; tema: Tema }) {
           )}
           {tema.titulo}
         </span>
-        {tema.resumen && <span class="fila-resumen">{tema.resumen.replace(/\[[^\]]*\]/g, '').slice(0, 160)}</span>}
-        <span class="fila-meta" title={fechaCompleta(tema.fecha)}>
-          {meta.join(' · ')}
+        {tema.resumen && (
+          <span class="fila-tema-extracto">{tema.resumen.replace(/\[[^\]]*\]/g, '').slice(0, 200)}</span>
+        )}
+        <span class="fila-tema-meta">
+          <span class="meta-autor">{tema.autor}</span>
+          <span title={fechaCompleta(tema.fecha)}>{fechaRelativa(tema.fecha)}</span>
+          <span class="meta-resp" aria-label={t('temas.respuestas', { n: tema.respuestas })}>
+            <IcoBocadillo />
+            {numeroEs(tema.respuestas)}
+          </span>
         </span>
-      </span>
-      <span class="fila-chevron">
-        <IcoChevron />
       </span>
     </a>
   );

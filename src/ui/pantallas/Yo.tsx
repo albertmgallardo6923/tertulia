@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { guardarAjustes, type ModoImagenes, type TamanoLetra } from '../../datos/ajustes';
+import { guardarAjustes, type ModoImagenes, type TamanoLetra, type Tema } from '../../datos/ajustes';
 import { clienteDe } from '../../datos/clientes';
 import { guardarForo, listarForos, quitarForo, type ForoGuardado } from '../../datos/foros';
 import { borrarSesion } from '../../datos/sesiones';
@@ -34,7 +34,7 @@ function FilaCuenta({ foro, alCambiar }: { foro: ForoGuardado; alCambiar: () => 
     <div class="fila fila--cuenta">
       <span class="fila-cuerpo">
         <span class="fila-titulo">{foro.nombre}</span>
-        <span class="fila-meta">{foro.usuario ? t('foros.conSesion', { usuario: foro.usuario }) : t('foros.invitado')}</span>
+        <span class="fila-meta meta-sesion">{foro.usuario ? t('foros.conSesion', { usuario: foro.usuario }) : t('foros.invitado')}</span>
       </span>
       <span class="fila-acciones">
         {foro.usuario ? (
@@ -59,6 +59,7 @@ export function Yo() {
   const carga = useCarga(listarForos, []);
 
   const cambiarImagenes = (v: ModoImagenes) => void guardarAjustes({ imagenes: v });
+  const cambiarTema = (v: Tema) => void guardarAjustes({ tema: v });
   const cambiarLetra = (v: TamanoLetra) => void guardarAjustes({ letra: v });
 
   return (
@@ -80,6 +81,19 @@ export function Yo() {
 
       <h2 class="seccion">{t('yo.ajustes')}</h2>
       <div class="lista lista--ajustes">
+        <div class="fila fila--ajuste">
+          <span class="fila-titulo">{t('yo.tema')}</span>
+          <Segmentado<Tema>
+            etiqueta={t('yo.tema')}
+            valor={ajustes.tema}
+            onCambio={cambiarTema}
+            opciones={[
+              { id: 'oscuro', texto: t('yo.temaOscuro') },
+              { id: 'claro', texto: t('yo.temaClaro') },
+              { id: 'auto', texto: t('yo.temaAuto') },
+            ]}
+          />
+        </div>
         <div class="fila fila--ajuste">
           <span class="fila-titulo">{t('yo.imagenes')}</span>
           <Segmentado<ModoImagenes>
@@ -118,10 +132,9 @@ export function Yo() {
       </div>
 
       <h2 class="seccion">{t('yo.acerca')}</h2>
-      <div class="tarjeta">
-        <p>
-          <strong>Tertulia</strong> · {t('yo.version', { v: '0.1.0' })}
-        </p>
+      <div class="acerca">
+        <p class="acerca-nombre">Tertulia</p>
+        <p class="acerca-version">{t('yo.version', { v: '0.1.0' })}</p>
         <p class="nota">{t('yo.acercaTexto')}</p>
         {esDemo() && <p class="nota">{t('yo.demo')}</p>}
       </div>

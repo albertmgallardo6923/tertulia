@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#F6EFE3"/>
-  <path d="M160 120h130a50 50 0 0 1 50 50v70a50 50 0 0 1-50 50H200l-62 48 14-52a50 50 0 0 1-42-48v-68a50 50 0 0 1 50-50z" fill="#E3A183"/>
-  <path d="M232 200h132a50 50 0 0 1 50 50v72a50 50 0 0 1-50 50h-20l8 46-62-46h-58a50 50 0 0 1-50-50v-72a50 50 0 0 1 50-50z" fill="#C2562F" stroke="#F6EFE3" stroke-width="12" stroke-linejoin="round"/>
-  <rect x="246" y="250" width="124" height="14" rx="7" fill="#F6EFE3"/>
-  <rect x="246" y="284" width="84" height="14" rx="7" fill="#F6EFE3"/>
+  <rect width="512" height="512" fill="#10141C"/>
+  <path d="M160 120h130a50 50 0 0 1 50 50v70a50 50 0 0 1-50 50H200l-62 48 14-52a50 50 0 0 1-42-48v-68a50 50 0 0 1 50-50z" fill="#D6A85C"/>
+  <path d="M232 200h132a50 50 0 0 1 50 50v72a50 50 0 0 1-50 50h-20l8 46-62-46h-58a50 50 0 0 1-50-50v-72a50 50 0 0 1 50-50z" fill="#ECE6DA" stroke="#10141C" stroke-width="12" stroke-linejoin="round"/>
+  <rect x="246" y="250" width="124" height="14" rx="7" fill="#10141C"/>
+  <rect x="246" y="284" width="84" height="14" rx="7" fill="#10141C"/>
 </svg>

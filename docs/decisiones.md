@@ -20,3 +20,4 @@ Una línea por decisión: fecha · decisión · motivo.
 - 2026-11-05 · Colores y tamaños de BBCode como clases `bb-*` de una paleta cerrada, sin `style` · la lista de atributos permitidos no incluye `style`.
 - 2026-11-05 · Tests de saneado en happy-dom con `tests/setup.ts` (nodeName polimórfico) y vectores aislados · DOMPurify ≥ 3.4 y el NodeIterator de happy-dom no recorren bien los hijos de un nodo eliminado; los vectores combinados se comprobaron en Chromium real.
 - 2026-11-05 · El borrador de tema nuevo se guarda con clave `borrador:<foroId>:nuevo-<subforoId>` · evita mezclar borradores de secciones distintas.
+- 2026-11-05 · Rediseño «Sala de lectura nocturna» (docs/diseno.md): oscuro por defecto con ajuste en Yo, Literata + Instrument Sans empaquetadas (latín) y el hilo con nudos; sustituye al estilo terracota. La hoja de redactar y el visor de imágenes van en un portal en body (sobre la barra de pestañas). Saneado sin reparsear (RETURN_DOM_FRAGMENT).

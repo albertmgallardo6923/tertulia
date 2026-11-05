@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { bbcodeAHtml } from '../../src/contenido/bbcode';
-import { contenidoAHtml } from '../../src/contenido/sanear';
+import { contenidoAFragmento, fragmentoAHtml } from '../../src/contenido/sanear';
+
+const contenidoAHtml = (s: string) => fragmentoAHtml(contenidoAFragmento(s));
 
 describe('BBCode', () => {
   it('etiquetas simples', () => {
@@ -67,5 +69,39 @@ describe('BBCode', () => {
     bbcodeAHtml('[b]'.repeat(5000) + 'x' + '[/b]'.repeat(5000));
     bbcodeAHtml('[quote]'.repeat(3000));
     expect(Date.now() - t0).toBeLessThan(3000);
+  });
+});
+
+describe('bbcode: robustez y saltos de línea', () => {
+  it('reduce 3 o más <br> seguidos a dos', () => {
+    expect(bbcodeAHtml('a<br /><br /><br /><br />b')).toBe('a<br><br>b');
+    expect(bbcodeAHtml('a\n\n\n\n\nb')).toBe('a<br><br>b');
+    expect(bbcodeAHtml('a<br><br>b')).toBe('a<br><br>b');
+  });
+
+  it('no toca los saltos dentro de [code]', () => {
+    expect(bbcodeAHtml('[code]a\n\n\n\nb[/code]')).toContain('a\n\n\n\nb');
+  });
+
+  it('trunca la entrada a 100 KB', () => {
+    const r = bbcodeAHtml('x'.repeat(300_000));
+    expect(r.length).toBe(100_000);
+  });
+
+  it.each([
+    ['[url=', ''],
+    ['[url=', '[/url]'],
+    ['[code]', ''],
+    ['[code=', ''],
+    ['[quote=x]', '[/quote]'],
+    ['[b]', '[/b]'],
+  ])('%s repetido 10.000 veces (cierre: %s) termina en menos de 200 ms', (unidad, cierre) => {
+    const t0 = performance.now();
+    bbcodeAHtml(unidad.repeat(10_000) + cierre);
+    expect(performance.now() - t0).toBeLessThan(200);
+  });
+
+  it('un [code] sin cierre queda como texto y lo posterior sigue interpretándose', () => {
+    expect(bbcodeAHtml('[code]hola [b]x[/b]')).toContain('<b>x</b>');
   });
 });
