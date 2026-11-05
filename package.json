@@ -6,7 +6,8 @@
   "description": "Lector de foros PWA para iPhone, compatible con la API de Tapatalk",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/build-worker.mjs",
+    "build:worker": "node scripts/build-worker.mjs",
     "preview": "vite preview",
     "test": "vitest run --reporter=dot",
     "test:e2e": "playwright test --project=iphone",
@@ -18,6 +19,7 @@
     "preact": "^10.26.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261104.1",
     "@playwright/test": "^1.50.0",
     "@preact/preset-vite": "^2.10.0",
     "happy-dom": "^21.0.4",
