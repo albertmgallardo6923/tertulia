@@ -25,3 +25,8 @@ export function fechaCompleta(fecha: Date | null): string {
   if (!fecha || isNaN(fecha.getTime())) return '';
   return new Intl.DateTimeFormat('es-ES', { dateStyle: 'long', timeStyle: 'short' }).format(fecha);
 }
+
+/** 5482 -> «5.482» (es-ES no agrupa los de 4 cifras por defecto, así que se hace a mano). */
+export function numeroEs(n: number): string {
+  return String(Math.trunc(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}

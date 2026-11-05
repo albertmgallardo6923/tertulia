@@ -50,25 +50,34 @@ export function Novedades() {
     cuerpo = (
       <>
         {carga.error !== undefined && <Aviso error={carga.error} />}
-        {grupos.map((g) => (
-          <section class="grupo-seccion" key={g.foro.id}>
-            <h2 class="seccion">
-              {g.foro.nombre}
-              <span class="seccion-sub">{g.foro.usuario ? t('novedades.noLeidos') : t('novedades.ultimos')}</span>
-            </h2>
-            {g.error !== undefined ? (
-              <Aviso error={g.error} />
-            ) : g.temas.length === 0 ? (
-              <p class="nota">{t('novedades.foroAlDia')}</p>
-            ) : (
-              <div class="lista">
-                {g.temas.map((tema) => (
-                  <FilaTema key={tema.id} foroId={g.foro.id} tema={tema} />
-                ))}
-              </div>
-            )}
-          </section>
-        ))}
+        {grupos.map((g) => {
+          const nuevos = g.temas.filter((x) => x.hayNuevos).length;
+          return (
+            <section class="grupo-foro" key={g.foro.id}>
+              <h2 class="grupo-cab">
+                <span class="grupo-nombre">{g.foro.nombre}</span>
+                <span class={`grupo-cuenta${nuevos > 0 ? ' grupo-cuenta--nuevos' : ''}`}>
+                  {nuevos > 0
+                    ? t(nuevos === 1 ? 'novedades.nuevo' : 'novedades.nuevos', { n: nuevos })
+                    : g.foro.usuario
+                      ? t('novedades.noLeidos')
+                      : t('novedades.ultimos')}
+                </span>
+              </h2>
+              {g.error !== undefined ? (
+                <Aviso error={g.error} />
+              ) : g.temas.length === 0 ? (
+                <p class="nota">{t('novedades.foroAlDia')}</p>
+              ) : (
+                <div class="lista-temas">
+                  {g.temas.map((tema) => (
+                    <FilaTema key={tema.id} foroId={g.foro.id} tema={tema} conSesion={!!g.foro.usuario} />
+                  ))}
+                </div>
+              )}
+            </section>
+          );
+        })}
       </>
     );
   }

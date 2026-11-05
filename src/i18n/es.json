@@ -40,7 +40,9 @@
     "alDiaTexto": "No hay temas con novedades en tus foros.",
     "foroAlDia": "Sin novedades en este foro.",
     "noLeidos": "No leídos",
-    "ultimos": "Últimos temas"
+    "ultimos": "Últimos temas",
+    "nuevo": "{n} nuevo",
+    "nuevos": "{n} nuevos"
   },
   "foros": {
     "anadir": "Añadir foro",
@@ -74,7 +76,7 @@
     "titulo": "Temas",
     "vacio": "No hay temas",
     "vacioTexto": "Esta sección aún no tiene temas.",
-    "respuestas": "{n} resp.",
+    "respuestas": "{n} respuestas",
     "nuevos": "Con mensajes nuevos",
     "fijado": "Tema fijado"
   },
@@ -90,7 +92,7 @@
     "asunto": "Asunto",
     "escribe": "Escribe tu mensaje",
     "borradorAuto": "El borrador se guarda solo en este dispositivo.",
-    "publicar": "Publicar tema",
+    "publicar": "Publicar",
     "enviar": "Enviar",
     "responder": "Responder",
     "citar": "Citar",
@@ -105,7 +107,12 @@
     "sinConexion": "No se pudo actualizar; se muestra lo guardado.",
     "iniciaParaResponder": "Inicia sesión para responder",
     "necesitaSesion": "Necesitas iniciar sesión para crear un tema.",
-    "nuevoVacio": "Escribe un asunto y un mensaje."
+    "nuevoVacio": "Escribe un asunto y un mensaje.",
+    "publicando": "Publicando…",
+    "publicado": "Publicado",
+    "escribeRespuesta": "Escribe una respuesta…",
+    "mas": "Más opciones",
+    "irAlUltimo": "Ir al último mensaje"
   },
   "yo": {
     "cuentas": "Cuentas por foro",
@@ -128,7 +135,11 @@
     "acerca": "Acerca de",
     "version": "versión {v}",
     "acercaTexto": "Lector de foros independiente. Funciona con foros que ofrecen el conector de Tapatalk y no está afiliada a esa empresa. Tus contraseñas nunca se guardan.",
-    "demo": "Estás viendo el modo demostración con datos de ejemplo; no se usa la red."
+    "demo": "Estás viendo el modo demostración con datos de ejemplo; no se usa la red.",
+    "tema": "Apariencia",
+    "temaOscuro": "Oscuro",
+    "temaClaro": "Claro",
+    "temaAuto": "Automático"
   },
   "mensajes": {
     "proximamente": "Aquí verás tus mensajes privados."
@@ -138,7 +149,11 @@
   },
   "contenido": {
     "spoiler": "Spoiler",
-    "cargarImagen": "Toca para cargar la imagen"
+    "cargarImagen": "Toca para cargar la imagen",
+    "verMas": "Mostrar más",
+    "verMenos": "Mostrar menos",
+    "imagenAmpliada": "Imagen ampliada",
+    "cerrarImagen": "Cerrar imagen"
   },
   "errores": {
     "titulo": "Algo ha fallado",

@@ -1,12 +1,14 @@
 import { guardar, leer } from './almacen';
 
 export type ModoImagenes = 'siempre' | 'tocar';
+export type Tema = 'oscuro' | 'claro' | 'auto';
 export type TamanoLetra = 'pequena' | 'normal' | 'grande' | 'enorme';
 
 export interface Ajustes {
   clave: string; // clave de acceso de la app (se envía al proxy)
   imagenes: ModoImagenes;
   letra: TamanoLetra;
+  tema: Tema;
   persistenciaPedida: boolean;
 }
 
@@ -14,6 +16,7 @@ export const AJUSTES_INICIALES: Ajustes = {
   clave: '',
   imagenes: 'siempre',
   letra: 'normal',
+  tema: 'oscuro',
   persistenciaPedida: false,
 };
 

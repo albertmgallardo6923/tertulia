@@ -25,10 +25,13 @@ describe('pantallas con fixtures (modo demostración)', () => {
     const esperado = (await cliente.getUltimosTemas(0, 19)).temas[0]!.titulo;
     const c = await montar(<Novedades />);
     await esperarTexto(c, esperado);
-    expect(c.querySelector('h2.seccion')?.textContent).toContain('Club Tesla España');
+    expect(c.querySelector('h2.grupo-cab')?.textContent).toContain('Club Tesla España');
     expect(c.textContent).toContain('Últimos temas');
-    expect(c.querySelectorAll('a.fila--tema').length).toBeGreaterThan(0);
-    expect(c.querySelector('a.fila--tema')?.getAttribute('href')).toMatch(/^#\/foros\/foro\.clubtesla\.es\/t\/\d+$/);
+    expect(c.querySelectorAll('a.fila-tema').length).toBeGreaterThan(0);
+    expect(c.querySelector('a.fila-tema')?.getAttribute('href')).toMatch(/^#\/foros\/foro\.clubtesla\.es\/t\/\d+$/);
+    // Sin metadatos unidos con «·» ni etiquetas en mayúsculas forzadas.
+    expect(c.querySelector('.fila-tema-meta')?.textContent).not.toContain('·');
+    expect(c.querySelector('.fila-tema-meta svg')).not.toBeNull();
   });
 
   it('Novedades sin foros: estado vacío con enlace para añadir', async () => {
@@ -40,7 +43,9 @@ describe('pantallas con fixtures (modo demostración)', () => {
   it('Novedades con sesión pide no leídos', async () => {
     await foroDemo('ana');
     const c = await montar(<Novedades />);
-    await esperarTexto(c, 'No leídos');
+    await esperarTexto(c, '1 nuevo');
+    expect(c.querySelectorAll('.punto')).toHaveLength(1);
+    expect(c.querySelectorAll('.fila-tema--leido').length).toBeGreaterThan(0);
   });
 
   it('Foros: lista los foros añadidos', async () => {
@@ -56,15 +61,15 @@ describe('pantallas con fixtures (modo demostración)', () => {
     const c = await montar(<ArbolForo foroId={foro.id} />);
     await esperarTexto(c, 'Club Tesla España');
     await act(() => new Promise((r) => setTimeout(r, 50)));
-    expect(c.querySelectorAll('.fila--categoria').length).toBeGreaterThan(0);
-    expect(c.querySelector('a.fila')?.getAttribute('href')).toContain('/f/');
+    expect(c.querySelectorAll('.arbol-fila--categoria').length).toBeGreaterThan(0);
+    expect(c.querySelector('a.arbol-fila')?.getAttribute('href')).toContain('/f/');
   });
 
   it('Foros: lista de temas paginada', async () => {
     const foro = await foroDemo();
     const c = await montar(<ListaTemas foroId={foro.id} subforoId="3" pagina={1} />);
     await act(() => new Promise((r) => setTimeout(r, 80)));
-    expect(c.querySelectorAll('a.fila--tema').length).toBeGreaterThan(0);
+    expect(c.querySelectorAll('a.fila-tema').length).toBeGreaterThan(0);
   });
 
   it('Añadir foro: descubre el foro y ofrece iniciar sesión o invitado', async () => {
@@ -88,7 +93,7 @@ describe('pantallas con fixtures (modo demostración)', () => {
     const foro = await foroDemo();
     const c = await montar(<PantallaTema foroId={foro.id} temaId="14162" pagina={1} />);
     await esperarTexto(c, 'Inicia sesión para responder');
-    const mensajes = c.querySelectorAll('article.mensaje');
+    const mensajes = c.querySelectorAll('article.msg');
     expect(mensajes.length).toBeGreaterThan(0);
     expect(c.querySelector('script')).toBeNull();
     expect(c.querySelector('[onerror],[onclick]')).toBeNull();
@@ -96,21 +101,29 @@ describe('pantallas con fixtures (modo demostración)', () => {
       expect(a.getAttribute('rel')).toBe('noopener noreferrer nofollow');
       expect(a.getAttribute('href') ?? 'https:').toMatch(/^https:/);
     });
-    expect(c.querySelector('.mensaje-cab strong')?.textContent).toBeTruthy();
-    expect(c.querySelector('a[href$="/p/ultimo"]')).not.toBeNull();
+    expect(c.querySelector('.msg-autor')?.textContent).toBeTruthy();
+    expect(c.querySelector('.hilo .nudo')?.textContent).toMatch(/^[A-Z0-9]{1,2}$/);
+    expect(c.querySelector('.hilo-titulo')?.textContent).toBeTruthy();
+    expect(c.querySelector('.pie-fijo a')?.getAttribute('href')).toMatch(/\/login$/);
   });
 
   it('Tema con sesión: botones Responder, Citar y Marcar como leído', async () => {
     const foro = await foroDemo('ana');
     const c = await montar(<PantallaTema foroId={foro.id} temaId="14162" pagina={1} />);
-    await esperarTexto(c, 'Marcar como leído');
-    expect(c.textContent).toContain('Citar');
-    const responder = [...c.querySelectorAll('button.btn-primario')].find((b) => b.textContent === 'Responder')!;
+    await esperarTexto(c, 'Citar');
+    expect(c.querySelector('.redactar-campo')?.textContent).toBe('Escribe una respuesta…');
+    const menu = c.querySelector('button[aria-label="Más opciones"]') as HTMLButtonElement;
     await act(() => {
-      (responder as HTMLButtonElement).click();
+      menu.click();
+    });
+    expect(c.querySelector('.menu')?.textContent).toContain('Marcar como leído');
+    expect(c.querySelector('.menu a')?.getAttribute('href')).toMatch(/\/p\/ultimo$/);
+    await act(() => {
+      (c.querySelector('.redactar-campo') as HTMLButtonElement).click();
     });
     await act(() => new Promise((r) => setTimeout(r, 30)));
-    expect(c.querySelector('textarea')).not.toBeNull();
+    expect(document.querySelector('.hoja textarea')).not.toBeNull();
+    expect(document.querySelector('.hoja .btn-publicar')?.textContent).toBe('Publicar');
   });
 
   it('Yo: cuentas, ajustes y acerca de', async () => {
@@ -120,6 +133,7 @@ describe('pantallas con fixtures (modo demostración)', () => {
     expect(c.textContent).toContain('Cerrar sesión');
     expect(c.textContent).toContain('Cargar imágenes');
     expect(c.textContent).toContain('Tamaño de letra');
+    expect(c.textContent).toContain('Apariencia');
     expect(c.textContent).toContain('Acerca de');
   });
 
@@ -132,6 +146,19 @@ describe('pantallas con fixtures (modo demostración)', () => {
       boton.click();
     });
     await esperarTexto(c, 'Invitado');
+  });
+
+  it('Yo: el tema es Oscuro por defecto y se puede cambiar y guardar', async () => {
+    const c = await montar(<Yo />);
+    await act(() => new Promise((r) => setTimeout(r, 30)));
+    const botones = [...c.querySelectorAll('.segmentado[aria-label="Apariencia"] button')];
+    expect(botones.map((b) => b.textContent)).toEqual(['Oscuro', 'Claro', 'Automático']);
+    expect(botones[0]!.getAttribute('aria-checked')).toBe('true');
+    await act(() => {
+      (botones[1] as HTMLButtonElement).click();
+    });
+    await act(() => new Promise((r) => setTimeout(r, 20)));
+    expect(botones[1]!.getAttribute('aria-checked')).toBe('true');
   });
 
   it('Yo: cambiar «Cargar imágenes» actualiza el ajuste', async () => {

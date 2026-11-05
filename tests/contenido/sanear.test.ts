@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { contenidoAHtml, sanear } from '../../src/contenido/sanear';
+import {
+  contenidoAFragmento,
+  fragmentoAHtml,
+  sanearFragmento,
+  type ModoImagenes,
+} from '../../src/contenido/sanear';
 
-const pintar = (s: string) => contenidoAHtml(s);
+const pintar = (s: string, opc: { imagenes?: ModoImagenes; textoBoton?: string } = {}) =>
+  fragmentoAHtml(contenidoAFragmento(s, opc));
+const sanear = (s: string) => fragmentoAHtml(sanearFragmento(s));
 
 function dom(html: string): HTMLElement {
   const d = document.createElement('div');
@@ -53,7 +60,7 @@ describe('saneado: vectores XSS', () => {
     expect(h).not.toContain('http://');
   });
 
-  it('quita las clases de la app y conserva las bb-', () => {
+  it('quita las clases de la app y conserva solo las de la lista cerrada', () => {
     const h = pintar('<div class="tabbar modal bb-quote otra">x</div><span class="barra">y</span>');
     const d = dom(h);
     expect(d.querySelector('div')?.getAttribute('class')).toBe('bb-quote');
@@ -116,13 +123,48 @@ describe('saneado: enlaces e imágenes', () => {
   });
 
   it('«al tocar» sustituye las imágenes por un botón, salvo emojis', () => {
-    const h = contenidoAHtml(
-      '[img]https://ejemplo.es/a.png[/img] [img]https://emoji.tapatalk-cdn.com/e.png[/img]',
-      { imagenes: 'tocar', textoBoton: 'Toca' },
-    );
+    const h = pintar('[img]https://ejemplo.es/a.png[/img]', { imagenes: 'tocar', textoBoton: 'Toca' });
     const d = dom(h);
-    expect(d.querySelectorAll('img')).toHaveLength(1);
+    expect(d.querySelectorAll('img')).toHaveLength(0);
     const b = d.querySelector('button.bb-imagen-diferida')!;
     expect(b.getAttribute('data-src')).toBe('https://ejemplo.es/a.png');
+  });
+
+  it('«al tocar» también difiere los emojis', () => {
+    const d = dom(
+      pintar('[img]https://emoji.tapatalk-cdn.com/e.png[/img]', { imagenes: 'tocar', textoBoton: 'Toca' }),
+    );
+    expect(d.querySelectorAll('img')).toHaveLength(0);
+    expect(d.querySelector('button.bb-emoji-diferido')?.getAttribute('data-src')).toBe(
+      'https://emoji.tapatalk-cdn.com/e.png',
+    );
+  });
+
+  it('con «siempre» los emojis son imágenes', () => {
+    expect(dom(pintar('[img]https://emoji.tapatalk-cdn.com/e.png[/img]')).querySelectorAll('img')).toHaveLength(1);
+  });
+});
+
+describe('saneado: clases y fragmento', () => {
+  it('un mensaje no puede imitar clases internas de la app', () => {
+    const d = dom(
+      pintar(
+        '<span class="bb-imagen-diferida">a</span><span class="bb-emoji-diferido">b</span>' +
+          '<div class="bb-quote--plegada">c</div><div class="bb-quote-x bb-size-xxl">d</div>',
+      ),
+    );
+    expect(d.querySelector('[class]')).toBeNull();
+  });
+
+  it('acepta las clases que genera el BBCode', () => {
+    const d = dom(pintar('[color=red]a[/color][size=6]b[/size][spoiler]c[/spoiler][quote=x]d[/quote][code]e[/code]'));
+    const clases = [...d.querySelectorAll('[class]')].map((e) => e.getAttribute('class'));
+    expect(clases).toEqual(['bb-color-red', 'bb-size-xl', 'bb-spoiler', 'bb-quote', 'bb-code']);
+  });
+
+  it('devuelve un DocumentFragment (sin reparsear HTML ya saneado)', () => {
+    const f = contenidoAFragmento('hola [b]mundo[/b]');
+    expect(f.nodeType).toBe(11);
+    expect(f.querySelector('b')?.textContent).toBe('mundo');
   });
 });

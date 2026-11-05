@@ -5,6 +5,14 @@ import { t } from '../i18n';
 const MARCA_INI = '';
 const MARCA_FIN = '';
 const MAX_VUELTAS = 40;
+const MAX_ENTRADA = 100_000; // 100 KB: más allá no se procesa (cota para los reemplazos con regex)
+const RE_BR_SEGUIDOS = /(?:<br\s*\/?>\s*){3,}/gi;
+
+/** Tres o más saltos seguidos se quedan en dos. */
+function reducirSaltos(s: string): string {
+  return s.replace(RE_BR_SEGUIDOS, '<br><br>');
+}
+
 
 function escaparTexto(s: string): string {
   return s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -124,19 +132,39 @@ function convertir(etiqueta: string, param: string | undefined, contenido: strin
 }
 
 // Una etiqueta cuyo contenido no contiene otra apertura de la misma: se resuelve de dentro a fuera.
+// El parámetro no admite «[» ni «]»: así una apertura sin cerrar falla en O(1) y el coste total es lineal.
 const RE_ETIQUETA =
-  /\[(b|i|u|s|quote|url|img|spoiler|list|color|size)(?:=([^\]]*))?\]((?:(?!\[\1(?:=[^\]]*)?\])[\s\S])*?)\[\/\1\]/gi;
+  /\[(b|i|u|s|quote|url|img|spoiler|list|color|size)(?:=([^\][]*))?\]((?:(?!\[\1(?:=[^\][]*)?\])[\s\S])*?)\[\/\1\]/gi;
+
+/**
+ * [code]: su contenido es literal, se aparta antes de interpretar nada.
+ * Recorrido lineal: si una apertura no tiene cierre, ninguna posterior lo tendrá y se para.
+ */
+function apartarCodigo(s: string, bloques: string[]): string {
+  const apertura = /\[code(?:=[^\][]*)?\]/gi;
+  const cierre = /\[\/code\]/gi;
+  let salida = '';
+  let pos = 0;
+  for (;;) {
+    apertura.lastIndex = pos;
+    const a = apertura.exec(s);
+    if (!a) break;
+    cierre.lastIndex = a.index + a[0].length;
+    const c = cierre.exec(s);
+    if (!c) break;
+    const literal = escaparTexto(s.slice(a.index + a[0].length, c.index).replace(/<br\s*\/?>\r?\n?/gi, '\n'));
+    bloques.push(`<pre class="bb-code"><code>${literal}</code></pre>`);
+    salida += s.slice(pos, a.index) + `${MARCA_INI}${bloques.length - 1}${MARCA_FIN}`;
+    pos = c.index + c[0].length;
+  }
+  return salida + s.slice(pos);
+}
 
 export function bbcodeAHtml(entrada: string): string {
   const bloques: string[] = [];
   // Quitamos nuestras marcas internas del texto del foro para que no puedan colarse.
-  let s = entrada.split(MARCA_INI).join('').split(MARCA_FIN).join('');
-  // [code]: su contenido es literal, se aparta antes de interpretar nada.
-  s = s.replace(/\[code(?:=[^\]]*)?\]([\s\S]*?)\[\/code\]/gi, (_m, c: string) => {
-    const literal = escaparTexto(c.replace(/<br\s*\/?>\r?\n?/gi, '\n'));
-    bloques.push(`<pre class="bb-code"><code>${literal}</code></pre>`);
-    return `${MARCA_INI}${bloques.length - 1}${MARCA_FIN}`;
-  });
+  let s = entrada.slice(0, MAX_ENTRADA).split(MARCA_INI).join('').split(MARCA_FIN).join('');
+  s = apartarCodigo(s, bloques);
   if (!/<br/i.test(s)) s = s.replace(/\r?\n/g, '<br>'); // texto plano: saltos de línea reales
   for (let i = 0; i < MAX_VUELTAS; i++) {
     const nuevo = s.replace(RE_ETIQUETA, (_m, e: string, p: string | undefined, c: string) =>
@@ -145,5 +173,6 @@ export function bbcodeAHtml(entrada: string): string {
     if (nuevo === s) break;
     s = nuevo;
   }
+  s = reducirSaltos(s);
   return s.replace(new RegExp(`${MARCA_INI}(\\d+)${MARCA_FIN}`, 'g'), (_m, n: string) => bloques[Number(n)] ?? '');
 }

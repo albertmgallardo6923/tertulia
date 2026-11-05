@@ -8,6 +8,7 @@ import { Novedades } from './pantallas/Novedades';
 import { Proximamente } from './pantallas/Proximamente';
 import { PantallaNuevoTema, PantallaTema } from './pantallas/Tema';
 import { Yo } from './pantallas/Yo';
+import { aplicarTema } from './tema';
 
 const PESTANAS = ['novedades', 'foros', 'mensajes', 'avisos', 'yo'];
 
@@ -41,6 +42,8 @@ export function App() {
   useEffect(() => {
     document.documentElement.dataset.letra = ajustes.letra;
   }, [ajustes.letra]);
+
+  useEffect(() => aplicarTema(ajustes.tema), [ajustes.tema]);
 
   // Fuera de la app instalada solo se muestra la guía (el almacenamiento de Safari no se comparte).
   if (!demo && !estaInstalada()) return <Bienvenida />;
