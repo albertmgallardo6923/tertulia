@@ -14,16 +14,17 @@ Actualizado: 5 de noviembre de 2026
 - Repositorio creado: github.com/albertmgallardo6923/tertulia. Copia en el Mac: Documentos/tertulia.
 - Revisado el repo del gimnasio: HTML único + `sw.js` + `_worker.js` en Cloudflare Pages con KV.
 
+- **Fase 0 superada:** foro.clubtesla.es (SMF 2.1, plugin sm21, API 3) responde. Fixtures en
+  `tests/fixtures/foro-clubtesla-es/` (recortados y anonimizados) con sus rarezas en el README.
+
 ## Bloqueado (espera al usuario)
 
-- Un foro real para probar la API (se prueba con el navegador de la app).
 - Cuenta de Cloudflare: ya existe (la usa el gimnasio); hará falta en la Fase 6.
 
 ## Siguiente
 
-1. Con un foro real: `get_config` desde el navegador de la app y grabar el fixture.
-2. Comprobación de la Fase 0: al menos un foro compatible.
-3. Fase 1, parte 2: subagente `api-foros` (fixtures y contrato).
+1. Fase 1, parte 2: subagente `api-foros` escribe `docs/api-contrato.md` y `src/api/` con tests.
+2. Fase 2: arquitectura + revisión del `revisor`.
 
 ## Consumo por fase
 

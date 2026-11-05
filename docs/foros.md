@@ -6,4 +6,4 @@ Esta tabla solo sirve para que `scripts/probe-foros.mjs` compruebe foros públic
 
 | nombre | url | tengo usuario |
 | --- | --- | --- |
-| (pendiente) | https://ejemplo.com/foro | no |
+| Club Tesla España | https://foro.clubtesla.es | sí |
